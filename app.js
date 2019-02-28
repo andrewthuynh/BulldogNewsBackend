@@ -1,33 +1,41 @@
-const mongoose = require("mongoose");
 const express = require("express");
-const logger = require("morgan");
-const Data = require("./data");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const passport = require("passport");
 
-const API_PORT = process.env.PORT || 5000;
+const users = require("./routes/api/users");
+
 const app = express();
-const router = express.Router();
 
-// this is our MongoDB database
-const dbRoute = "mongodb+srv://soarAdmin:!Monkey000@cluster0-kmm0h.mongodb.net/test?retryWrites=true";
+// Bodyparser middleware
+app.use(
+  bodyParser.urlencoded({
+    extended: false
+  })
+);
+app.use(bodyParser.json());
 
-// connects our back end code with the database
-mongoose.connect(dbRoute, { useNewUrlParser: true });
+// DB Config
+const db = require("./config/keys").mongoURI;
 
-let db = mongoose.connection;
+// Connect to MongoDB
+mongoose
+  .connect(
+    db,
+    { useNewUrlParser: true }
+  )
+  .then(() => console.log("MongoDB successfully connected"))
+  .catch(err => console.log(err));
 
-db.once("open", () => console.log("connected to the database"));
+// Passport middleware
+app.use(passport.initialize());
 
-// checks if connection with the database is successful
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
+// Passport config
+require("./config/passport")(passport);
 
-// (optional) only made for logging and
-// bodyParser, parses the request body to be a readable json format
-app.use(express.urlencoded({ extended: false }));
-app.use(logger("dev"));
+// Routes
+app.use("/api/users", users);
 
-//routes
-app.use('/', require('./routes/index'));
-app.use('/users', require('./routes/users'));
+const port = process.env.PORT || 5000;
 
-// launch our backend into a port
-app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
+app.listen(port, () => console.log(`Server up and running on port ${port} !`));

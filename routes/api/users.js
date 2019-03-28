@@ -106,4 +106,13 @@ router.post("/login", (req, res) => {
   });
 });
 
+router.get("/search", (req, res) => {
+ 
+  User.find({ name: { $regex: req.query.name, $options: 'i'} }, function(err, users){
+  if (err) return handleError(err);
+
+  res.send(users);
+  });
+});
+
 module.exports = router;

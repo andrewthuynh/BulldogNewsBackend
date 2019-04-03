@@ -23,6 +23,10 @@ const CitySchema = new Schema({
     type: String,
     required: false
   }
+  events: {
+    type: Array,
+    required: false
+  }
 });
 
 module.exports = City = mongoose.model("cities", CitySchema);

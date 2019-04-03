@@ -18,7 +18,16 @@ const UserSchema = new Schema({
   date: {
     type: Date,
     default: Date.now
+  },
+  friends: {
+    type: Array,
+    default: []
+  },
+  groups: {
+    type: Array,
+    default: []
   }
+
 });
 
 module.exports = User = mongoose.model("users", UserSchema);

@@ -12,11 +12,11 @@ const EventSchema = new Schema({
     required: true
   },
   members: {
-    type: mongoose.Schema.Types.ObjectId, ref: 'User',
+    type: Array,
     required: false
   },
   owner: {
-    type: mongoose.Schema.Types.ObjectId, ref: 'User',
+    type: String,
     required: false
   },
   startDate: {

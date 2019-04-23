@@ -22,7 +22,7 @@ const CitySchema = new Schema({
   image: {
     type: String,
     required: false
-  }
+  },
   events: {
     type: Array,
     required: false

@@ -25,12 +25,13 @@ router.post("/register", (req, res) => {
     return res.status(400).json(errors);
   }
 
-  User.findOne({ email: req.body.email }).then(user => {
+  User.findOne({ email: req.body.email }, {username: req.body.name}).then(user => {
     if (user) {
-      return res.status(400).json({ email: "Email already exists" });
+      return res.status(400).json({ email: "Email/username already exists" });
     } else {
       const newUser = new User({
         name: req.body.name,
+        username: req.body.username,
         email: req.body.email,
         password: req.body.password
       });
@@ -80,7 +81,8 @@ router.post("/login", (req, res) => {
         // Create JWT Payload
         const payload = {
           id: user.id,
-          name: user.name
+          name: user.name,
+          username: user.username
         };
 
         // Sign token
@@ -108,7 +110,7 @@ router.post("/login", (req, res) => {
 
 router.get("/search", (req, res) => {
  
-  User.find({ name: { $regex: req.query.name, $options: 'i'} }, function(err, users){
+  User.find({ name: { $regex: req.query.name, $options: 'i'}, username:{$ne: req.query.username} }, function(err, users){
   if (err) return handleError(err);
 
   res.send(users);

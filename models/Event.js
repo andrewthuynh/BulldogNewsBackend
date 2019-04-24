@@ -1,22 +1,18 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
+const Message = require('./Message');
 // Create Schema
 const EventSchema = new Schema({
-  id: {
+  activityId: {
     type: Number,
     required: true
   },
-  name: {
+  owner: {
     type: String,
-    required: true
+    required: false
   },
   members: {
     type: Array,
-    required: false
-  },
-  owner: {
-    type: String,
     required: false
   },
   startDate: {
@@ -27,10 +23,11 @@ const EventSchema = new Schema({
     type: Date,
     default: Date.now
   },
-  details: {
-      type: String,
+  discussion: [{
+      type: Schema.Types.ObjectId, 
+      ref:'Message',
       required: false
-  }
+  }]
 });
 
 module.exports = Event = mongoose.model("events", EventSchema);

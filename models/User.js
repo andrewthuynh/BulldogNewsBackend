@@ -27,6 +27,10 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'friends'
   }],
+  image: {
+    type: String,
+    default: 'https://www.palmkvistmaleri.se/wp-content/uploads/2018/02/default.jpg'
+  }
 });
 
 module.exports = User = mongoose.model("users", UserSchema);

@@ -117,4 +117,14 @@ router.get("/search", (req, res) => {
   });
 });
 
+router.get("/getInfo", (req, res) => {
+ 
+  User.findOne({ username: req.query.username }).then(user => {
+    // Check if user exists
+    if (user) {
+      res.send(user);
+    }
+  })
+});
+
 module.exports = router;

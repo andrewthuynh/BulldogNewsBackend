@@ -4,6 +4,7 @@ const router = express.Router();
 // Load User model
 const Event = require("../../models/Event");
 const Message = require("../../models/Message");
+const Activity = require("../../models/Activity");
 
 // @route POST api/users/register
 // @desc Register user
@@ -18,34 +19,54 @@ router.get("/searchEvent", (req, res) => {
 
 });
 
+router.get("/myEvents", (req, res) => {
+
+  Event.find({ owner: { $regex: req.query.owner, $options: 'i' } }, function (err, events) {
+    if (err) return handleError(err);
+
+    res.send(events);
+  });
+
+});
+
+router.get("/getEvent", (req, res) => {
+
+  Event.findById(req.query.id).then(event => {
+    res.send(event);
+  })
+});
+
 router.post("/new", (req, res) => {
-  // Form validation
+    // Form validation
 
-  Event.findOne({ id: req.body.id }).then(event => {
-    if (event) {
-      return res.status(400).json({ email: "Event already exists" });
-    } else {
+   
 
-      var today = new Date();
-      var tomorrow = new Date();
-      tomorrow.setDate(today.getDate() + 1);
+        var today = new Date();
+        var tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 1);
 
-      const newEvent = new Event({
-        activityId: req.body.activityId,
-        name: req.body.name,
-        details: req.body.details,
-        startDate: today,
-        endDate: tomorrow
-      });
+        const newActivity = new Activity({
+          id: req.body.activity.id,
+          name: req.body.activity.name,
+          details: req.body.activity.details,
+          image: req.body.activity.image,
+          description: req.body.activity.description,
+          city: req.body.activity.city
+        });
 
-      newEvent
-        .save()
-        .then(event => res.json(event))
-        .catch(err => console.log(err));
-    }
+        const newEvent = new Event({
+          owner: req.body.owner,
+          startDate: today,
+          endDate: tomorrow,
+          activity: newActivity
+        });
+
+        newEvent
+          .save()
+          .then(event => res.json(event))
+          .catch(err => console.log(err));
 
   });
-});
 
 router.post("/chat", (req, res) => {
   // Form validation
@@ -53,6 +74,7 @@ router.post("/chat", (req, res) => {
   var time = new Date();
 
   const newMessage = new Message({
+    eventId: req.body.eventId,
     sender: req.body.sender,
     message_date: time,
     content: req.body.content
@@ -62,17 +84,6 @@ router.post("/chat", (req, res) => {
     .save()
     .then(message => res.json(message))
     .catch(err => console.log(err));
-
-  Event.findOne({ _id: req.body.id }).then(event => {
-
-    event.discussion.push(newMessage);
-
-    newEvent
-      .save()
-      .then(event => res.json(event))
-      .catch(err => console.log(err));
-
-  });
 
 });
 

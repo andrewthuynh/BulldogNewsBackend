@@ -14,6 +14,16 @@ router.get("/", (req, res) => {
   
 });
 
+router.get("/id", (req, res) => {
+  
+  Activity.find({ id: { $regex: req.query.id, $options: 'i'} }, function(err, activities){
+  if (err) return handleError(err);
+
+  res.send(activities);
+  });
+  
+});
+
 router.post("/new", (req, res) => {
   // Form validation
 

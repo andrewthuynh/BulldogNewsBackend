@@ -3,9 +3,10 @@ const Schema = mongoose.Schema;
 const Message = require('./Message');
 // Create Schema
 const EventSchema = new Schema({
-  activityId: {
-    type: Number,
-    required: true
+  name: {
+    type: String,
+    required: false,
+    default: "My New Event"
   },
   owner: {
     type: String,
@@ -27,7 +28,13 @@ const EventSchema = new Schema({
       type: Schema.Types.ObjectId, 
       ref:'Message',
       required: false
-  }]
+  }],
+  activity: [{
+    type: Schema.Types.ObjectId, 
+    ref:'Activity',
+    required: true
+}]
+  
 });
 
 module.exports = Event = mongoose.model("events", EventSchema);

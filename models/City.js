@@ -8,8 +8,8 @@ const CitySchema = new Schema({
     required: true
   },
   tags: {
-    type: String,
-    required: false
+    type: Array,
+    default: []
   },
   description: {
     type: String,
@@ -23,10 +23,6 @@ const CitySchema = new Schema({
     type: String,
     required: false
   },
-  events: {
-    type: Array,
-    required: false
-  }
 });
 
 module.exports = City = mongoose.model("cities", CitySchema);

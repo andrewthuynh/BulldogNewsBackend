@@ -9,11 +9,11 @@ const City = require("../../models/City");
 // @access Public
 router.get("/", (req, res) => {
   
-  City.find({ name: { $regex: req.query.name, $options: 'i'} }, function(err, cities){
-  if (err) return handleError(err);
-
-  res.send(cities);
-  });
+  City.find({ tags: {$in: req.query.tag} }, function(err, cities){
+    if (err) return handleError(err);
+  
+    res.send(cities);
+    });
   
 });
 

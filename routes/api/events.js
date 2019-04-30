@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require('mongoose');
 
 // Load User model
 const Event = require("../../models/Event");
 const Message = require("../../models/Message");
-const Activity = require("../../models/Activity");
 
 // @route POST api/users/register
 // @desc Register user
@@ -36,54 +36,86 @@ router.get("/getEvent", (req, res) => {
   })
 });
 
-router.post("/new", (req, res) => {
-    // Form validation
+router.delete("/deleteEvent", (req, res) => {
 
-   
+  Event.deleteOne({ _id: req.body.id }, function (err) {
+    if (err) {
+      console.log(err);
+    }
 
-        var today = new Date();
-        var tomorrow = new Date();
-        tomorrow.setDate(today.getDate() + 1);
-
-        const newActivity = new Activity({
-          id: req.body.activity.id,
-          name: req.body.activity.name,
-          details: req.body.activity.details,
-          image: req.body.activity.image,
-          description: req.body.activity.description,
-          city: req.body.activity.city
-        });
-
-        const newEvent = new Event({
-          owner: req.body.owner,
-          startDate: today,
-          endDate: tomorrow,
-          activity: newActivity
-        });
-
-        newEvent
-          .save()
-          .then(event => res.json(event))
-          .catch(err => console.log(err));
-
+    res.send("Deleted event with ID ".concat(req.body.id));
   });
+});
+
+router.get("/getEvents", (req, res) => {
+
+  var list;
+  var ids;
+
+  User.findOne({ username: req.query.username }).then(user => {
+    list = user.events;
+    ids = list.map(function (id) { return mongoose.Types.ObjectId(id); });
+    Event.find({ _id: { $in: ids } }).then(event => {
+      res.send(event);
+    })
+  })
+
+});
+
+router.post("/new", (req, res) => {
+  // Form validation
+
+
+
+  var today = new Date();
+  var tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  const newEvent = new Event({
+    name: req.body.name,
+    image: req.body.image,
+    city: req.body.city,
+    details: req.body.details,
+    owner: req.body.owner,
+    startDate: today,
+    endDate: tomorrow,
+  });
+
+  newEvent
+    .save()
+    .then(event => res.json(event))
+    .catch(err => console.log(err));
+
+});
+
+router.post("/updateDate", (req, res) => {
+  Event.findOneAndUpdate({ '_id': req.body.id }, { $set: { startDate: req.body.startDate, endDate: req.body.endDate } }, function (err, doc) {
+
+    if (err) return res.send(500, { error: err });
+    return res.send("succesfully saved");
+  });
+})
 
 router.post("/chat", (req, res) => {
   // Form validation
 
   var time = new Date();
 
-  const newMessage = new Message({
-    eventId: req.body.eventId,
-    sender: req.body.sender,
-    message_date: time,
-    content: req.body.content
-  });
+  Event.findById(req.body.id).then(event => {
 
-  newMessage
-    .save()
-    .then(message => res.json(message))
-    .catch(err => console.log(err));
+    event.discussion.push(
+      {
+        sender: req.body.sender,
+        message_date: time,
+        content: req.body.content
+      }
+    );
+
+    event
+      .save()
+      .then(newMessage => res.json(newMessage))
+      .catch(err => console.log(err));
+  })
 
 });
 

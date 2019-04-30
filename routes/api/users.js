@@ -11,6 +11,7 @@ const validateLoginInput = require("../../validation/login");
 
 // Load User model
 const User = require("../../models/User");
+const Event = require("../../models/Event");
 
 // @route POST api/users/register
 // @desc Register user
@@ -25,16 +26,25 @@ router.post("/register", (req, res) => {
     return res.status(400).json(errors);
   }
 
-  User.findOne({ email: req.body.email }, {username: req.body.name}).then(user => {
+  User.findOne({ email: req.body.email }, { username: req.body.name }).then(user => {
     if (user) {
       return res.status(400).json({ email: "Email/username already exists" });
     } else {
+
+      let image = 'https://www.palmkvistmaleri.se/wp-content/uploads/2018/02/default.jpg';
+
+      if (req.body.image != "") {
+        image = req.body.image;
+      }
+
       const newUser = new User({
         name: req.body.name,
         username: req.body.username,
         email: req.body.email,
-        password: req.body.password
+        password: req.body.password,
+        image: image
       });
+
 
       // Hash password before saving in database
       bcrypt.genSalt(10, (err, salt) => {
@@ -109,16 +119,16 @@ router.post("/login", (req, res) => {
 });
 
 router.get("/search", (req, res) => {
- 
-  User.find({ name: { $regex: req.query.name, $options: 'i'}, username:{$ne: req.query.username} }, function(err, users){
-  if (err) return handleError(err);
+    
+  User.find({ name: { $regex: req.query.name, $options: 'i'}, username:{$ne: req.query.username}, events:{$ne: req.query.id} }, function(err, users){
+  
+    res.send(users);
+    });
 
-  res.send(users);
-  });
 });
 
 router.get("/getInfo", (req, res) => {
- 
+
   User.findOne({ username: req.query.username }).then(user => {
     // Check if user exists
     if (user) {
@@ -126,5 +136,23 @@ router.get("/getInfo", (req, res) => {
     }
   })
 });
+
+router.get("/getMembers", (req, res) => {
+
+  User.find({ events: { $in: req.query.event } }).then(members => {
+    res.send(members);
+  })
+
+});
+
+router.post("/addEvent", (req, res) => {
+  User.findOne({ username: req.body.username }).then(user => {
+    user.events.push(req.body.eventId);
+    user
+      .save()
+      .then(user => res.json(user))
+      .catch(err => console.log(err));
+  })
+})
 
 module.exports = router;

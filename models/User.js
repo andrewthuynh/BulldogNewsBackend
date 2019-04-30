@@ -27,6 +27,9 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'friends'
   }],
+  events: {
+    type: Array,
+  },
   image: {
     type: String,
     default: 'https://www.palmkvistmaleri.se/wp-content/uploads/2018/02/default.jpg'

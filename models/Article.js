@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 // Create Schema
-const CitySchema = new Schema({
-  name: {
+const ArticleSchema = new Schema({
+  title: {
     type: String,
     required: true
   },
@@ -23,6 +23,10 @@ const CitySchema = new Schema({
     type: String,
     required: false
   },
+  body: {
+    type: String,
+    required: false
+  },
 });
 
-module.exports = City = mongoose.model("cities", CitySchema);
+module.exports = Article = mongoose.model("articles", ArticleSchema);

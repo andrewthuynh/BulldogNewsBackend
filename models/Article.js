@@ -3,6 +3,10 @@ const Schema = mongoose.Schema;
 
 // Create Schema
 const ArticleSchema = new Schema({
+  author: {
+    type: String,
+    default: "John Doe"
+  },
   title: {
     type: String,
     required: true
@@ -27,6 +31,10 @@ const ArticleSchema = new Schema({
     type: String,
     required: false
   },
+  dateCreated: {
+    type: Date,
+    default: Date.now()
+  }
 });
 
 module.exports = Article = mongoose.model("articles", ArticleSchema);

@@ -36,6 +36,7 @@ router.post("/new", (req, res) => {
     } else {
 
       const newArticle = new Article({
+        author: req.body.author,
         title: req.body.title,
         description: req.body.description,
         details: req.body.details,
